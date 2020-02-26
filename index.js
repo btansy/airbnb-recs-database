@@ -1,0 +1,25 @@
+const newrelic = require('newrelic');
+const express = require('express');
+const app = express();
+const port = 3003;
+app.use(express.json());
+app.use(express.urlencoded({extended: false}));
+const bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+const db = require ('./db.js');
+
+var cors = require('cors');
+app.use(cors());
+
+app.get('/pageload', (req, res) => {
+  db.pageload( req.query.listid, req.query.userid, (err, data) => {
+    if (err) {
+      res.status(400).send(err);
+    } else {
+      res.status(200).send(data.rows);
+    }
+  })
+});
+
+app.listen(port, () => console.log(`App listening on port ${port}`));
